@@ -1,5 +1,5 @@
 #! python
-# Usage: python3 cmdLineEmailer.py text_to_email
+# Usage: python3 cmdLineEmailer.py
 
 from selenium import webdriver
 import sys
