@@ -35,13 +35,13 @@ for i in range(0, 10, 10):
     position = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
     link = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
     for i in range(len(link)):
-        link[i] = 'https://ca.indeed.com/' + link[i]
+        link[i] = 'https://ca.indeed.com/' + link[i].get("href")
 
     for i in range(len(company)):
         lis = []
         lis.append(company[i].getText())
         lis.append(position[i].getText())
-        lis.append(link[i].get("href"))
+        lis.append(link[i])
         lis = '\n'.join(lis)
         jobSearch.write(lis)
         jobSearch.write("\n")
