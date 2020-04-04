@@ -31,11 +31,37 @@ for i in range(0, 10, 10):
             company[i] = [result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.sjcl > div > span.company > a")][i]
         else:
             continue
-
+ 
     position = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
+
+    # checks whether you can apply for the job on the indeed portal or on the actual company's site, if it's the latter
+    # it changes the link to go to company's site for that specific position
     link = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
     for i in range(len(link)):
         link[i] = 'https://ca.indeed.com/' + link[i].get("href")
+
+        jobSite = requests.get(link[i])
+
+        try:
+            jobSite.raise_for_status()
+        except Exception as exc:
+            print(f"There was a problem: {exc}")
+
+        jobSiteSoup = bs4.BeautifulSoup(jobSite.text, 'html.parser')
+
+        # checks whether it is Apply Now button or Apply on Company Site button
+        if not jobSiteSoup.select("#viewJobButtonLinkContainers > div.icl-u-lg-block.icl-u-xs-hide.icl-u-lg-textCenter > a"):
+            SoupElem = jobSiteSoup.select("#indeedApplyButtonContainer > span > div.jobsearch-IndeedApplyButton-buttonWrapper.icl-u-lg-block.icl-u-xs-hide > button > div")
+        else:
+            SoupElem = jobSiteSoup.select("#viewJobButtonLinkContainers > div.icl-u-lg-block.icl-u-xs-hide.icl-u-lg-textCenter > a")
+        
+        SoupElemText = SoupElem[0].getText()
+
+        # checks whether the Apply button for the job links to the actual company's job application site
+        if "Company" in SoupElemText:
+            link[i] = SoupElem[0].get("href")
+        else:
+            continue
 
     for i in range(len(company)):
         lis = []
