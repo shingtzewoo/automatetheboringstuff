@@ -1,5 +1,6 @@
 #! python
 # This program downloads all the links to the jobs you are searching for and stores them in a text file
+# Usage: python3 jobSearcher.py
 
 import sys
 import pyinputplus as pyip
@@ -8,14 +9,11 @@ import datetime
 import time
 
 job = pyip.inputStr("What job are you looking for?\n")
-
 location = pyip.inputStr("What location in Canada would like to search for jobs?\n")
+jobSearch = open("jobSearch.txt", 'a')
 
 # https://ca.indeed.com/jobs?q=POSITION+TITLE&l=LOCATION&jt=fulltime&start=PAGE
 # Page goes up in 10s
-
-jobSearch = open("jobSearch.txt", 'a')
-
 for i in range(0, 10, 10):
 
     site = requests.get('https://ca.indeed.com/jobs?q=' + job + '&l=' + location + '&jt=fulltime&start=' + str(i))
@@ -36,6 +34,8 @@ for i in range(0, 10, 10):
 
     position = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
     link = result.select("div.jobsearch-SerpJobCard.unifiedRow.row.result > div.title a")
+    for i in range(len(link)):
+        link[i] = 'https://ca.indeed.com/' + link[i]
 
     for i in range(len(company)):
         lis = []
